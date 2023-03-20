@@ -20,6 +20,22 @@ import (
 var sessionHistory []RMessage
 var maxCounter int
 
+func appendToSessionHistory(role RFrom, content string) {
+	sessionHistory = append(sessionHistory, RMessage{
+		Role:    role,
+		Content: content,
+	})
+	file, err := os.Create("session_history.json")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer file.Close()
+	_, err = file.WriteString(historyToString(sessionHistory))
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
 func historyToString(h []RMessage) string {
 	bytes, err := json.Marshal(h)
 	if err != nil {
@@ -28,7 +44,7 @@ func historyToString(h []RMessage) string {
 	return string(bytes)
 }
 
-func executeCommandWithBash(command string) (string, string) {
+func executeCommandWithBash(command string) (string, int, string) {
 	cmd := exec.Command("bash", "-c", command)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
@@ -37,7 +53,8 @@ func executeCommandWithBash(command string) (string, string) {
 	if err != nil {
 		log.Printf("error: %v", err)
 	}
-	return outb.String(), errb.String()
+	exitCode := cmd.ProcessState.ExitCode()
+	return outb.String(), exitCode, errb.String()
 }
 
 func parseCounter(strArg string) int {
@@ -50,12 +67,9 @@ func parseCounter(strArg string) int {
 }
 
 func apiCall(counter int) string {
+	log.Printf("Making API Call: %d", counter)
 	apiRes := makeOpenAIAPICall()
-	sessionHistory = append(sessionHistory, RMessage{
-		Role:    API,
-		Content: apiRes,
-	})
-
+	appendToSessionHistory(API, apiRes)
 	parts := strings.Split(apiRes, "|")
 	if parts[0] == "DONE" || counter >= maxCounter {
 		return "DONE"
@@ -103,19 +117,20 @@ func makeOpenAIAPICall() string {
 }
 
 func runCommand(command string, counter int) string {
-	cmdRes := fmt.Sprintf("Running command: %s", command)
+	log.Printf("Running command: %s", command)
 
-	out, err := executeCommandWithBash(command)
+	cmdRes := fmt.Sprintf("Running command: %s", command)
+	out, exitCode, err := executeCommandWithBash(command)
 	if err != "" {
 		cmdRes += fmt.Sprintf("\nError: %s", err)
 	}
 
 	cmdRes += fmt.Sprintf("\nOutput: %s", out)
+	cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode)
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
-	sessionHistory = append(sessionHistory, RMessage{
-		Role:    Machine,
-		Content: cmdRes,
-	})
+
+	appendToSessionHistory(Machine, cmdRes)
+
 	apiCall(counter + 1)
 	return cmdRes
 }
@@ -132,7 +147,7 @@ func main() {
 
 	prefix := `Pretend to be a Linux Expert managing a Linux Server. A user will give you a task. Your main purpose is to return Linux terminal Commands and also validate thier outputs.
 Reply with "DONE" only when the task provided by the User is complete. The user will provide you with the outputs of the commands you provide. Only reply with the command and no explainations.
-Return Linux Terminal Commands in the format -
+Return Linux Terminal Commands (one at a time) in the format -
 CONTINUE|{COMMAND}
 with the keyword "CONTINUE" in all caps if you want to validate the commands output and {COMMAND} is the terminal command.
 Remember - Do not reply with anything other than "CONTINUE|{COMMAND}" or "DONE". If the task is complete reply with "DONE" and nothing else.`
@@ -154,14 +169,10 @@ Remember - Do not reply with anything other than "CONTINUE|{COMMAND}" or "DONE".
 
 	initialInput = strings.TrimSuffix(userData, "\n")
 
-	sessionHistory = append(sessionHistory, RMessage{
-		Role:    System,
-		Content: prefix,
-	})
-	sessionHistory = append(sessionHistory, RMessage{
-		Role:    User,
-		Content: "TASK: " + initialInput,
-	})
+	appendToSessionHistory(System, prefix)
+	appendToSessionHistory(User, "TASK: "+initialInput)
+
+	log.Println("Starting the conversation...")
 	_ = apiCall(counter)
 
 	fmt.Println("################################")
