@@ -130,7 +130,7 @@ func main() {
 		initialInput string
 	)
 
-	prefix := `Pretend to be a Linux Expert managing a Linux Server. A user will give you a task. Your main purpose is to return Linux terminal Commands and also validate thier ouputs.
+	prefix := `Pretend to be a Linux Expert managing a Linux Server. A user will give you a task. Your main purpose is to return Linux terminal Commands and also validate thier outputs.
 Reply with "DONE" only when the task provided by the User is complete. The user will provide you with the outputs of the commands you provide. Only reply with the command and no explainations.
 Return Linux Terminal Commands in the format -
 CONTINUE|{COMMAND}
