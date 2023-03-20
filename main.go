@@ -95,7 +95,10 @@ func makeOpenAIAPICall() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	response, _ := jsonparser.GetString(bodyText, "choices", "[0]", "message", "content")
+	response, err := jsonparser.GetString(bodyText, "choices", "[0]", "message", "content")
+	if err != nil {
+		log.Fatal(err)
+	}
 	return response
 }
 
