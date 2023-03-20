@@ -2,12 +2,14 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -24,6 +26,18 @@ func historyToString(h []RMessage) string {
 		log.Fatalln(err)
 	}
 	return string(bytes)
+}
+
+func executeCommandWithBash(command string) (string, string) {
+	cmd := exec.Command("bash", "-c", command)
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+	if err != nil {
+		log.Printf("error: %v", err)
+	}
+	return outb.String(), errb.String()
 }
 
 func parseCounter(strArg string) int {
@@ -87,8 +101,13 @@ func makeOpenAIAPICall() string {
 
 func runCommand(command string, counter int) string {
 	cmdRes := fmt.Sprintf("Running command: %s", command)
-	cmdRes += "Output:\n"
-	cmdRes += "hello world\n"
+
+	out, err := executeCommandWithBash(command)
+	if err != "" {
+		cmdRes += fmt.Sprintf("\nError: %s", err)
+	}
+
+	cmdRes += fmt.Sprintf("\nOutput: %s", out)
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 	sessionHistory = append(sessionHistory, RMessage{
 		Role:    Machine,
