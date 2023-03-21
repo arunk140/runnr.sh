@@ -170,9 +170,16 @@ Remember - Do not reply with anything other than "CONTINUE|{COMMAND}" or "DONE".
 	initialInput = strings.TrimSuffix(userData, "\n")
 
 	appendToSessionHistory(System, prefix)
-	appendToSessionHistory(User, "TASK: "+initialInput)
+	sysinfo, sysinfoExitCode, sysinfoErr := executeCommandWithBash("./sysinfo.sh")
+	if sysinfoExitCode != 0 {
+		log.Printf("sysinfo.sh error: %v", sysinfoErr)
+	} else {
+		appendToSessionHistory(Machine, sysinfo)
+	}
 
-	log.Println("Starting the conversation...")
+	appendToSessionHistory(User, "TASK: "+initialInput)
+	log.Println("Starting...")
+
 	_ = apiCall(counter)
 
 	fmt.Println("################################")
