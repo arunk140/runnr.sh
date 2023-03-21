@@ -158,12 +158,11 @@ func main() {
 		initialInput string
 	)
 
-	prefix := `Pretend to be a Linux Expert managing a Linux Server. A user will give you a task. Your main purpose is to return Linux terminal Commands and also validate thier outputs.
-Reply with "DONE" only when the task provided by the User is complete. The user will provide you with the outputs of the commands you provide. Only reply with the command and no explainations.
-Return Linux Terminal Commands (one at a time) in the format -
-CONTINUE|{COMMAND}
-with the keyword "CONTINUE" in all caps if you want to validate the commands output and {COMMAND} is the terminal command.
-Remember - Do not reply with anything other than "CONTINUE|{COMMAND}" or "DONE". If the task is complete reply with "DONE" and nothing else.`
+	prefix := `In this exercise, you will act as a Linux expert who manages a Linux server. You will be given tasks by a user, and your job is to provide Linux terminal commands to complete the tasks. Your task is to provide the terminal commands only without any explanations.
+
+	You must use the format "CONTINUE|{COMMAND}" to provide the terminal command to the user. If you want to validate the command's output, you should include the keyword "CONTINUE" in all caps before the command. You will receive the output of the command you provided from the user.
+	
+	Your goal is to complete the task provided by the user, and you should reply with "DONE" only when the task is complete. Remember to only reply with "DONE" or "CONTINUE|{COMMAND}" and no other information.`
 
 	counter = 1
 	if len(os.Args) > 1 {
