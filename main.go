@@ -194,6 +194,5 @@ Remember - Do not reply with anything other than "CONTINUE|{COMMAND}" or "DONE".
 
 	_ = apiCall(counter)
 
-	fmt.Println("################################")
-	fmt.Println(historyToString(sessionHistory))
+	fmt.Println("Task Completed!")
 }
