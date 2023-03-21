@@ -50,6 +50,7 @@ func executeCommandWithBash(command string) (string, int, string) {
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
+	cmd.Stdin = os.Stdin
 
 	cmd.Dir = currentWorkingDir
 	err := cmd.Run()
