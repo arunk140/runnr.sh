@@ -19,6 +19,7 @@ import (
 
 var sessionHistory []RMessage
 var maxCounter int
+var currentWorkingDir string
 
 func appendToSessionHistory(role RFrom, content string) {
 	sessionHistory = append(sessionHistory, RMessage{
@@ -45,15 +46,24 @@ func historyToString(h []RMessage) string {
 }
 
 func executeCommandWithBash(command string) (string, int, string) {
-	cmd := exec.Command("bash", "-c", command)
+	cmd := exec.Command("bash", "-c", command+" && pwd")
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
+
+	cmd.Dir = currentWorkingDir
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("error: %v", err)
 	}
 	exitCode := cmd.ProcessState.ExitCode()
+	if exitCode == 0 {
+		lines := strings.Split(outb.String(), "\n")
+		currentWorkingDir = lines[len(lines)-2]
+
+		return strings.Join(lines[:len(lines)-2], "\n"), 0, errb.String()
+	}
+
 	return outb.String(), exitCode, errb.String()
 }
 
@@ -117,9 +127,11 @@ func makeOpenAIAPICall() string {
 }
 
 func runCommand(command string, counter int) string {
+	log.Println("Current Working Directory: ", currentWorkingDir)
 	log.Printf("Running command: %s", command)
 
 	cmdRes := fmt.Sprintf("Running command: %s", command)
+	command = strings.TrimSpace(command)
 	out, exitCode, err := executeCommandWithBash(command)
 	if err != "" {
 		cmdRes += fmt.Sprintf("\nError: %s", err)
