@@ -150,6 +150,7 @@ func runCommand(command string, counter int) string {
 }
 
 func main() {
+	log.SetFlags(0)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -178,7 +179,10 @@ Your goal is to complete the task provided by the user, and you should reply wit
 		return
 	}
 
-	initialInput = strings.TrimSuffix(userData, "\n")
+	initialInput = strings.TrimSpace(strings.TrimSuffix(userData, "\n"))
+	if initialInput == "" {
+		log.Fatalln("Input Command is empty")
+	}
 
 	appendToSessionHistory(System, prefix)
 	sysinfo, sysinfoExitCode, sysinfoErr := executeCommandWithBash("./sysinfo.sh")
