@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/buger/jsonparser"
+	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 )
 
@@ -56,7 +57,7 @@ func executeCommandWithBash(command string) (string, int, string) {
 	cmd.Dir = currentWorkingDir
 	err := cmd.Run()
 	if err != nil {
-		log.Printf("error: %v", err)
+		color.Red("error: %v", err)
 	}
 	exitCode := cmd.ProcessState.ExitCode()
 	if exitCode == 0 {
@@ -183,7 +184,7 @@ Your goal is to complete the task provided by the user, and you should reply wit
 		maxCounter = 10
 	}
 
-	log.Print("Input Command: ")
+	color.Green("Input Command: ")
 
 	userData, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	if err != nil {
@@ -202,6 +203,12 @@ Your goal is to complete the task provided by the user, and you should reply wit
 		log.Printf("sysinfo.sh error: %v", sysinfoErr)
 	} else {
 		appendToSessionHistory(Machine, sysinfo)
+	}
+
+	exampleConv := readExample("examples/files.json")
+
+	for _, e := range exampleConv {
+		appendToSessionHistory(e.Role, e.Content)
 	}
 
 	appendToSessionHistory(User, "TASK: "+initialInput)

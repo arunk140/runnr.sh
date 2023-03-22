@@ -13,7 +13,7 @@
     },
     {
         "role": "user",
-        "content": "Running command: cd ~\n\nOutput: \nExit Code: 0\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+        "content": "Running command: cd ~\n\nExit Code: 0"
     },
     {
         "role": "assistant",
@@ -21,7 +21,7 @@
     },
     {
         "role": "user",
-        "content": "Running command: mkdir test123\nOutput: \nExit Code: 0\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+        "content": "Running command: mkdir test123\nExit Code: 0"
     },
     {
         "role": "assistant",
@@ -29,7 +29,7 @@
     },
     {
         "role": "user",
-        "content": "Running command: cd test123\nOutput: \nExit Code: 0\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+        "content": "Running command: cd test123\nExit Code: 0"
     },
     {
         "role": "assistant",
@@ -37,7 +37,7 @@
     },
     {
         "role": "user",
-        "content": "Running command: touch file1.txt file2.txt file3.txt\nOutput: \nExit Code: 0\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+        "content": "Running command: touch file1.txt file2.txt file3.txt\nExit Code: 0"
     },
     {
         "role": "assistant",
