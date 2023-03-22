@@ -46,7 +46,8 @@ func historyToString(h []RMessage) string {
 }
 
 func executeCommandWithBash(command string) (string, int, string) {
-	cmd := exec.Command("bash", "-c", "./run.sh \""+command+"\"")
+	// cmd := exec.Command("bash", "-c", "./run.sh \""+command+"\"")
+	cmd := exec.Command("bash", "-c", command+" && pwd")
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
@@ -86,7 +87,7 @@ func apiCall(counter int) string {
 		return "DONE"
 	}
 	if len(parts) >= 1 && parts[0] == "CONTINUE" {
-		runCommand(parts[1], counter)
+		runCommand(apiRes, counter)
 	}
 	return apiRes
 }
@@ -128,18 +129,29 @@ func makeOpenAIAPICall() string {
 }
 
 func runCommand(command string, counter int) string {
+	var cmdRes string
 	log.Println("Current Working Directory: ", currentWorkingDir)
-	log.Printf("Running command: %s", command)
+	cm := strings.Split(command, "\n")
+	for _, c := range cm {
+		c = strings.TrimSpace(c)
+		cUpper := strings.ToUpper(c)
+		if c != "" && cUpper != "DONE" {
+			parts := strings.Split(c, "CONTINUE|")
+			if len(parts) >= 2 {
+				log.Printf("Running command: %s", parts[1])
+				cmdRes += fmt.Sprintf("Running command: %s", parts[1])
+				out, ec, err := executeCommandWithBash(parts[1])
+				if err != "" {
+					cmdRes += fmt.Sprintf("\nError: %s", err)
+				}
+				if out != "" {
+					cmdRes += fmt.Sprintf("\nOutput: %s", out)
+				}
+				cmdRes += fmt.Sprintf("\nExit Code: %d", ec)
+			}
+		}
+	}
 
-	cmdRes := fmt.Sprintf("Running command: %s", command)
-	command = strings.TrimSpace(command)
-	out, _, err := executeCommandWithBash(command)
-	if err != "" {
-		cmdRes += fmt.Sprintf("\nError: %s", err)
-	}
-	if out != "" {
-		cmdRes += fmt.Sprintf("\nOutput: %s", out)
-	}
 	// cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode) // Exit code is already included in the output
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 
