@@ -62,7 +62,7 @@ func executeCommandWithBash(command string) (string, int, string) {
 		lines := strings.Split(outb.String(), "\n")
 		currentWorkingDir = lines[len(lines)-2]
 
-		return strings.Join(lines[:len(lines)-2], "\n"), 0, errb.String()
+		return strings.Join(lines[:len(lines)-2], "\n"), exitCode, errb.String()
 	}
 
 	return outb.String(), exitCode, errb.String()
@@ -137,8 +137,9 @@ func runCommand(command string, counter int) string {
 	if err != "" {
 		cmdRes += fmt.Sprintf("\nError: %s", err)
 	}
-
-	cmdRes += fmt.Sprintf("\nOutput: %s", out)
+	if out != "" {
+		cmdRes += fmt.Sprintf("\nOutput: %s", out)
+	}
 	cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode)
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 
@@ -159,10 +160,8 @@ func main() {
 	)
 
 	prefix := `In this exercise, you will act as a Linux expert who manages a Linux server. You will be given tasks by a user, and your job is to provide Linux terminal commands to complete the tasks. Your task is to provide the terminal commands only without any explanations.
-
-	You must use the format "CONTINUE|{COMMAND}" to provide the terminal command to the user. If you want to validate the command's output, you should include the keyword "CONTINUE" in all caps before the command. You will receive the output of the command you provided from the user.
-	
-	Your goal is to complete the task provided by the user, and you should reply with "DONE" only when the task is complete. Remember to only reply with "DONE" or "CONTINUE|{COMMAND}" and no other information.`
+You must use the format "CONTINUE|{COMMAND}" to provide the terminal command to the user. If you want to validate the command's output, you should include the keyword "CONTINUE" in all caps before the command. You will receive the output of the command you provided from the user.
+Your goal is to complete the task provided by the user, and you should reply with "DONE" only when the task is complete. Remember to only reply with "DONE" or "CONTINUE|{COMMAND}" and no other information.`
 
 	counter = 1
 	if len(os.Args) > 1 {
