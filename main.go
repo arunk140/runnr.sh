@@ -46,7 +46,7 @@ func historyToString(h []RMessage) string {
 }
 
 func executeCommandWithBash(command string) (string, int, string) {
-	cmd := exec.Command("bash", "-c", command+" && pwd")
+	cmd := exec.Command("bash", "-c", "./run.sh \""+command+"\"")
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
