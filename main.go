@@ -133,14 +133,14 @@ func runCommand(command string, counter int) string {
 
 	cmdRes := fmt.Sprintf("Running command: %s", command)
 	command = strings.TrimSpace(command)
-	out, exitCode, err := executeCommandWithBash(command)
+	out, _, err := executeCommandWithBash(command)
 	if err != "" {
 		cmdRes += fmt.Sprintf("\nError: %s", err)
 	}
 	if out != "" {
 		cmdRes += fmt.Sprintf("\nOutput: %s", out)
 	}
-	cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode)
+	// cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode) // Exit code is already included in the output
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 
 	appendToSessionHistory(Machine, cmdRes)
