@@ -132,29 +132,27 @@ func makeOpenAIAPICall() string {
 func runCommand(command string, counter int) string {
 	var cmdRes string
 	log.Println("Current Working Directory: ", currentWorkingDir)
-	cm := strings.Split(command, "\n")
+	cm := strings.Split(command, "CONTINUE|")
 	for _, c := range cm {
 		c = strings.TrimSpace(c)
 		cUpper := strings.ToUpper(c)
 		if c != "" && cUpper != "DONE" {
-			parts := strings.Split(c, "CONTINUE|")
-			if len(parts) >= 2 {
-				log.Printf("Running command: %s", parts[1])
-				cmdRes += fmt.Sprintf("Running command: %s", parts[1])
-				out, ec, err := executeCommandWithBash(parts[1])
-				if err != "" {
-					cmdRes += fmt.Sprintf("\nError: %s", err)
-				}
-				if out != "" {
-					cmdRes += fmt.Sprintf("\nOutput: %s", out)
-				}
-				cmdRes += fmt.Sprintf("\nExit Code: %d", ec)
+			log.Printf("Running command: %s", c)
+			cmdRes += fmt.Sprintf("Running command: %s", c)
+			out, ec, err := executeCommandWithBash(c)
+			if err != "" {
+
+				cmdRes += fmt.Sprintf("\nError: %s", err)
 			}
+			if out != "" {
+				cmdRes += fmt.Sprintf("\nOutput: %s", out)
+			}
+			cmdRes += fmt.Sprintf("\nExit Code: %d", ec)
 		}
 	}
-
 	// cmdRes += fmt.Sprintf("\nExit Code: %d", exitCode) // Exit code is already included in the output
 	cmdRes += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+	cmdRes += "\nDo not use nano, vi, vim, emacs, or any other text editor. Or any other command that requires user input."
 
 	appendToSessionHistory(Machine, cmdRes)
 
@@ -210,6 +208,10 @@ Your goal is to complete the task provided by the user, and you should reply wit
 	for _, e := range exampleConv {
 		appendToSessionHistory(e.Role, e.Content)
 	}
+	initialInput += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
+	initialInput += "\nDo not use nano, vi, vim, emacs, or any other text editor. Or any other command that requires user input."
+	initialInput += "\nif you create a file, validate the file's content using the command \"CONTINUE|cat {FILE_NAME}\""
+	initialInput += "\nStrictly, Use only single line commands. "
 
 	appendToSessionHistory(User, "TASK: "+initialInput)
 	log.Println("Starting...")

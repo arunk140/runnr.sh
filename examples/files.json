@@ -42,5 +42,9 @@
     {
         "role": "assistant",
         "content": "DONE"
+    },
+    {
+        "role": "user",
+        "content": "Task Completed. Current working directory Reset."
     }
 ]
