@@ -22,6 +22,8 @@ var sessionHistory []RMessage
 var maxCounter int
 var currentWorkingDir string
 
+var totalTokenCount int
+
 func appendToSessionHistory(role RFrom, content string) {
 	sessionHistory = append(sessionHistory, RMessage{
 		Role:    role,
@@ -126,6 +128,11 @@ func makeOpenAIAPICall() string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	totalTokens, err := jsonparser.GetInt(bodyText, "usage", "total_tokens")
+	if err != nil {
+		log.Fatal(err)
+	}
+	totalTokenCount += int(totalTokens)
 	return response
 }
 
@@ -215,8 +222,11 @@ Your goal is to complete the task provided by the user, and you should reply wit
 
 	appendToSessionHistory(User, "TASK: "+initialInput)
 	log.Println("Starting...")
+	totalTokenCount = 0
 
 	_ = apiCall(counter)
 
 	fmt.Println("Task Completed!")
+	fmt.Println("Total Tokens Used: ", totalTokenCount)
+	fmt.Println("USD spent - ", float64(totalTokenCount)/1000*0.002)
 }
