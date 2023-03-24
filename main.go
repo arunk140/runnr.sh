@@ -80,7 +80,7 @@ func parseCounter(strArg string) int {
 }
 
 func apiCall(counter int) string {
-	log.Printf("Making API Call: %d", counter)
+	color.Magenta("Making API Call: %d", counter)
 	apiRes := makeOpenAIAPICall()
 	appendToSessionHistory(API, apiRes)
 	parts := strings.Split(apiRes, "|")
@@ -137,11 +137,10 @@ func runCommand(command string, counter int) string {
 		c = strings.TrimSpace(c)
 		cUpper := strings.ToUpper(c)
 		if c != "" && cUpper != "DONE" {
-			log.Printf("Running command: %s", c)
+			color.Yellow("Running command: %s", c)
 			cmdRes += fmt.Sprintf("Running command: %s", c)
 			out, ec, err := executeCommandWithBash(c)
 			if err != "" {
-
 				cmdRes += fmt.Sprintf("\nError: %s", err)
 			}
 			if out != "" {
@@ -187,6 +186,7 @@ Your goal is to complete the task provided by the user, and you should reply wit
 	userData, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	if err != nil {
 		_ = fmt.Errorf(" %v error", err)
+		log.Fatal(err)
 		return
 	}
 
