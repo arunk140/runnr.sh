@@ -211,7 +211,7 @@ Your goal is to complete the task provided by the user, and you should reply wit
 	initialInput += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 	initialInput += "\nDo not use nano, vi, vim, emacs, or any other text editor. Or any other command that requires user input."
 	initialInput += "\nif you create a file, validate the file's content using the command \"CONTINUE|cat {FILE_NAME}\""
-	initialInput += "\nStrictly, Use only single line commands. "
+	initialInput += "\nStrictly, Use only single line commands. Return one command at a time."
 
 	appendToSessionHistory(User, "TASK: "+initialInput)
 	log.Println("Starting...")
