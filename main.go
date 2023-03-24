@@ -49,7 +49,6 @@ func historyToString(h []RMessage) string {
 }
 
 func executeCommandWithBash(command string) (string, int, string) {
-	// cmd := exec.Command("bash", "-c", "./run.sh \""+command+"\"")
 	cmd := exec.Command("bash", "-c", command+" && pwd")
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
@@ -82,7 +81,8 @@ func parseCounter(strArg string) int {
 }
 
 func apiCall(counter int) string {
-	color.Magenta("Making API Call: %d", counter)
+	// color.Magenta("Making API Call: %d", counter)
+	color.Magenta("Processing ... ")
 	apiRes := makeOpenAIAPICall()
 	appendToSessionHistory(API, apiRes)
 	parts := strings.Split(apiRes, "|")
@@ -227,6 +227,6 @@ Your goal is to complete the task provided by the user, and you should reply wit
 	_ = apiCall(counter)
 
 	fmt.Println("Task Completed!")
-	fmt.Println("Total Tokens Used: ", totalTokenCount)
-	fmt.Println("USD spent - ", float64(totalTokenCount)/1000*0.002)
+	color.Magenta("Total Tokens Used: %d", totalTokenCount)
+	color.Magenta("Cost - $%f", float64(totalTokenCount)/1000*0.002)
 }
