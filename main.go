@@ -126,6 +126,8 @@ func makeOpenAIAPICall() string {
 	}
 	response, err := jsonparser.GetString(bodyText, "choices", "[0]", "message", "content")
 	if err != nil {
+		errMsg, _ := jsonparser.GetString(bodyText, "error", "message")
+		log.Println(errMsg)
 		log.Fatal(err)
 	}
 	totalTokens, err := jsonparser.GetInt(bodyText, "usage", "total_tokens")
@@ -168,6 +170,7 @@ func runCommand(command string, counter int) string {
 
 func main() {
 	log.SetFlags(0)
+	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -217,8 +220,8 @@ Your goal is to complete the task provided by the user, and you should reply wit
 	}
 	initialInput += "\nReply with \"DONE\" if the above output completes the give task. Else reply with \"CONTINUE|{COMMAND}\" with the next step."
 	initialInput += "\nDo not use nano, vi, vim, emacs, or any other text editor. Or any other command that requires user input."
-	initialInput += "\nif you create a file, validate the file's content using the command \"CONTINUE|cat {FILE_NAME}\""
-	initialInput += "\nStrictly, Use only single line commands. Return one command at a time."
+	// initialInput += "\nif you create a file, validate the file's content using the command \"CONTINUE|cat {FILE_NAME}\""
+	initialInput += "\nStrictly, only return commands - Use only single line commands. Return one command at a time."
 
 	appendToSessionHistory(User, "TASK: "+initialInput)
 	log.Println("Starting...")
@@ -228,5 +231,5 @@ Your goal is to complete the task provided by the user, and you should reply wit
 
 	fmt.Println("Task Completed!")
 	color.Magenta("Total Tokens Used: %d", totalTokenCount)
-	color.Magenta("Cost - $%f", float64(totalTokenCount)/1000*0.002)
+	// color.Magenta("Cost - $%f", float64(totalTokenCount)/1000*0.002)
 }
