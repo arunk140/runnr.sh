@@ -1,5 +1,14 @@
 # runnr.sh
-runnr.sh - proof of concept
+
+### Beware - it can run arbitary code on your system
+
+### Use at your own risk.
+
+
+
+#### Run Linux commands using OpenAI (gpt-3.5-turbo).
+
+
 
 Create a .env file
 
