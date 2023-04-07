@@ -231,5 +231,5 @@ Your goal is to complete the task provided by the user, and you should reply wit
 
 	fmt.Println("Task Completed!")
 	color.Magenta("Total Tokens Used: %d", totalTokenCount)
-	// color.Magenta("Cost - $%f", float64(totalTokenCount)/1000*0.002)
+	color.Magenta("Cost - $%f", float64(totalTokenCount)/1000*0.002)
 }
