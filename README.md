@@ -8,6 +8,8 @@
 
 #### Run Linux commands using OpenAI (gpt-3.5-turbo).
 
+- Just provide an Input in Natural Language and hope for the best....
+
 
 
 Create a .env file
