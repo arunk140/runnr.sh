@@ -1,4 +1,4 @@
-# runnr.sh
+# runnr.sh - for Linux
 
 ### Beware - it can run arbitary code on your system
 
